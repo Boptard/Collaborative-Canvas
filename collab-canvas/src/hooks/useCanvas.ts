@@ -14,6 +14,7 @@ interface UseCanvasReturn {
   updateViewport: (viewport: Viewport) => void;
   createObject: (object: CanvasObject) => void;
   updateObject: (object: CanvasObject) => void;
+  deleteObject: (objectId: string) => void;
   updateCursor: (cursor: Cursor) => void;
   isLoading: boolean;
 }
@@ -120,6 +121,15 @@ export const useCanvas = (userId: string, userName: string, userColor: string): 
     });
   }, [scheduleSyncToFirestore]);
 
+  const deleteObject = useCallback((objectId: string) => {
+    setCanvasState(prev => {
+      const newObjects = prev.objects.filter(obj => obj.id !== objectId);
+      pendingUpdatesRef.current.objects = newObjects;
+      scheduleSyncToFirestore();
+      return { ...prev, objects: newObjects };
+    });
+  }, [scheduleSyncToFirestore]);
+
   const updateCursor = useCallback((cursor: Cursor) => {
     if (!isValidUser) return;
 
@@ -187,6 +197,7 @@ export const useCanvas = (userId: string, userName: string, userColor: string): 
     updateViewport,
     createObject,
     updateObject,
+    deleteObject,
     updateCursor,
     isLoading
   };

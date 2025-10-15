@@ -19,7 +19,7 @@ import './App.css';
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const [selectedTool, setSelectedTool] = useState<'select' | 'rectangle' | 'circle'>('select');
+  const [selectedTool, setSelectedTool] = useState<'select' | 'rectangle' | 'circle' | 'delete'>('select');
   const [syncLatency, setSyncLatency] = useState<number>(0);
 
   const userColor = user ? generateUserColor(user.uid) : '#000000';
@@ -33,6 +33,7 @@ function App() {
     updateViewport,
     createObject,
     updateObject,
+    deleteObject,
     updateCursor,
     isLoading: isCanvasLoading
   } = useCanvas(user?.uid || '', userName, userColor);
@@ -105,6 +106,9 @@ function App() {
         case 'o':
           setSelectedTool('circle');
           break;
+        case 'd':
+          setSelectedTool('delete');
+          break;
       }
     };
 
@@ -142,6 +146,7 @@ function App() {
         onViewportChange={updateViewport}
         onObjectCreate={createObject}
         onObjectUpdate={updateObject}
+        onObjectDelete={deleteObject}
         selectedTool={selectedTool}
         userId={user.uid}
       />

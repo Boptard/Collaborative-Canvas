@@ -9,7 +9,8 @@ interface CanvasProps {
   onViewportChange: (viewport: Viewport) => void;
   onObjectCreate: (object: CanvasObject) => void;
   onObjectUpdate: (object: CanvasObject) => void;
-  selectedTool: 'select' | 'rectangle' | 'circle';
+  onObjectDelete: (objectId: string) => void;
+  selectedTool: 'select' | 'rectangle' | 'circle' | 'delete';
   userId: string;
 }
 
@@ -19,6 +20,7 @@ const Canvas: React.FC<CanvasProps> = ({
   onViewportChange,
   onObjectCreate,
   onObjectUpdate,
+  onObjectDelete,
   selectedTool,
   userId
 }) => {
@@ -135,26 +137,16 @@ const Canvas: React.FC<CanvasProps> = ({
 
       // If clicked on an object
       if (clickedObject) {
-        // Only allow dragging if not locked by another user
-        if (!clickedObject.lockedBy || clickedObject.lockedBy === userId) {
-          setInteraction({
-            ...interaction,
-            isMouseDown: true,
-            isDragging: true,
-            selectedObjectId: clickedObject.id,
-            dragStart: worldPos
-          });
-          onObjectUpdate({ ...clickedObject, lockedBy: userId, lockedAt: Date.now() });
-        } else {
-          // Object is locked by another user, just select it without dragging
-          setInteraction({
-            ...interaction,
-            isMouseDown: true,
-            selectedObjectId: clickedObject.id,
-            isDragging: false,
-            isPanning: false
-          });
-        }
+        // Allow any user to drag any shape
+        setInteraction({
+          ...interaction,
+          isMouseDown: true,
+          isDragging: true,
+          selectedObjectId: clickedObject.id,
+          dragStart: worldPos
+        });
+        // Lock the object to current user while dragging
+        onObjectUpdate({ ...clickedObject, lockedBy: userId, lockedAt: Date.now() });
       } else {
         // Clicked on empty space, enable panning
         setInteraction({
@@ -164,6 +156,32 @@ const Canvas: React.FC<CanvasProps> = ({
           selectedObjectId: null,
           dragStart: mousePos
         });
+      }
+    } else if (selectedTool === 'delete') {
+      // Find the topmost object at the click location
+      // Iterate in reverse order (last drawn = topmost)
+      let clickedObject = null;
+      for (let i = objects.length - 1; i >= 0; i--) {
+        const obj = objects[i];
+        const dx = worldPos.x - obj.position.x;
+        const dy = worldPos.y - obj.position.y;
+
+        let isInside = false;
+        if (obj.type === 'rectangle') {
+          isInside = Math.abs(dx) <= obj.size.width / 2 && Math.abs(dy) <= obj.size.height / 2;
+        } else if (obj.type === 'circle') {
+          isInside = Math.sqrt(dx * dx + dy * dy) <= obj.size.width / 2;
+        }
+
+        if (isInside) {
+          clickedObject = obj;
+          break; // Found the topmost object
+        }
+      }
+
+      // Delete the clicked object
+      if (clickedObject) {
+        onObjectDelete(clickedObject.id);
       }
     } else if (selectedTool === 'rectangle' || selectedTool === 'circle') {
       const newObject: CanvasObject = {
@@ -178,7 +196,7 @@ const Canvas: React.FC<CanvasProps> = ({
       };
       onObjectCreate(newObject);
     }
-  }, [selectedTool, objects, viewport, interaction, userId, onObjectUpdate, onObjectCreate]);
+  }, [selectedTool, objects, viewport, interaction, userId, onObjectUpdate, onObjectCreate, onObjectDelete]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!interaction.isMouseDown) return;
