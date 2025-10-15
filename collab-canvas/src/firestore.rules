@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Canvas document rules
+    match /canvases/{canvasId} {
+      // Allow read access to authenticated users only
+      allow read: if request.auth != null;
+
+      // Allow write access to authenticated users with validation
+      allow write: if request.auth != null
+        && isValidCanvasUpdate(request.resource.data);
+    }
+
+    // Validation functions
+    function isValidCanvasUpdate(data) {
+      return data.keys().hasAll(['id', 'objects', 'viewport', 'cursors', 'activeUsers', 'lastUpdated'])
+        && data.id is string
+        && data.objects is list
+        && data.viewport is map
+        && isValidViewport(data.viewport)
+        && data.cursors is map
+        && data.activeUsers is map
+        && data.lastUpdated is number;
+    }
+
+    function isValidViewport(viewport) {
+      return viewport.keys().hasAll(['center', 'zoom'])
+        && viewport.center is map
+        && viewport.center.keys().hasAll(['x', 'y'])
+        && viewport.center.x is number
+        && viewport.center.y is number
+        && viewport.zoom is number
+        && viewport.zoom >= 0.1
+        && viewport.zoom <= 5;
+    }
+  }
+}

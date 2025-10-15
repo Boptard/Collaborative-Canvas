@@ -1,0 +1,36 @@
+.performance-monitor {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  display: flex;
+  gap: 16px;
+  z-index: 1000;
+}
+
+.metric {
+  display: flex;
+  gap: 4px;
+}
+
+.metric-label {
+  color: #999;
+}
+
+.metric-value {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.metric-value.caution {
+  color: #FFC107;
+}
+
+.metric-value.warning {
+  color: #F44336;
+}

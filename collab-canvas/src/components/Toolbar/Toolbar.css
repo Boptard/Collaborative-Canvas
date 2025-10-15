@@ -1,0 +1,72 @@
+.toolbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  gap: 20px;
+}
+
+.toolbar-tools {
+  display: flex;
+  gap: 4px;
+}
+
+.tool-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: #333;
+}
+
+.tool-button:hover {
+  background-color: #f0f0f0;
+}
+
+.tool-button.active {
+  background-color: #4ECDC4;
+  color: white;
+}
+
+.toolbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+}
+
+.user-name {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.sign-out-button {
+  padding: 8px 16px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sign-out-button:hover {
+  background-color: #e0e0e0;
+}

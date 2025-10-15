@@ -1,0 +1,29 @@
+.cursors-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.1s ease-out;
+}
+
+.cursor-label {
+  position: absolute;
+  top: 20px;
+  left: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
